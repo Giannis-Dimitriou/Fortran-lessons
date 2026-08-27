@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fortran Tutor — Quiz 3</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f4f6fa;color:#182235}
+.container{max-width:900px;margin:auto;padding:20px}
+header{background:#17365d;color:#fff;border-radius:16px;padding:25px;margin-bottom:18px}
+.card{background:#fff;border:1px solid #d9e1ec;border-radius:13px;padding:18px;margin:14px 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button,select,input{font:inherit}
+button{border:0;border-radius:8px;padding:10px 13px;background:#2f75b5;color:#fff;cursor:pointer}
+button.alt{background:#e8edf5;color:#17365d}
+button.red{background:#c55a11}
+select,input{padding:9px;border:1px solid #cbd5e1;border-radius:8px}
+input[type=text]{width:100%;box-sizing:border-box;margin-top:6px}
+.option{display:block;border:1px solid #d8e1ed;border-radius:8px;padding:10px;margin:8px 0;cursor:pointer}
+.option:hover{background:#eef5fb}
+.meta{font-size:13px;color:#667085;margin-bottom:8px}
+.question{font-size:17px;line-height:1.5;white-space:pre-wrap}
+.feedback{display:none;margin-top:10px;padding:10px;border-radius:8px}
+.good{background:#e2f0d9;border:1px solid #70ad47}
+.bad{background:#fce4d6;border:1px solid #c55a11}
+.hint{display:none;margin-top:8px;padding:9px;background:#eef5fb;border-left:4px solid #2f75b5}
+#studentArea{display:none;margin-top:14px}
+#result{display:none}
+.score{font-size:28px;font-weight:bold;color:#17365d}
+.small{font-size:13px;color:#667085}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Fortran Tutor — Quiz 3</h1>
+<p>Κεφάλαιο 3 · Δομές επανάληψης</p>
+<p>Εξάσκηση στις δομές DO, DO WHILE, EXIT, CYCLE, εμφωλευμένους βρόχους και μορφοποίηση WRITE.</p>
+</header>
+
+<section class="card">
+<div class="controls">
+<button id="learnBtn">📘 Μάθηση</button>
+<button id="examBtn" class="alt">📝 Εξέταση</button>
+<select id="typeFilter">
+<option value="all">Όλοι οι τύποι</option>
+<option value="mcq">Πολλαπλής επιλογής</option>
+<option value="tf">Σωστό / Λάθος</option>
+</select>
+<select id="topicFilter"><option value="all">Όλες οι ενότητες</option></select>
+<button id="shuffleBtn" class="alt">🔀 Τυχαία σειρά</button>
+<button id="resetBtn" class="red">↺ Επαναφορά</button>
+<button id="checkBtn">✓ Έλεγχος</button>
+</div>
+<div id="studentArea">
+<label>Ονοματεπώνυμο φοιτητή *</label>
+<input id="studentName" type="text" placeholder="π.χ. Γιάννης Παπαδόπουλος">
+</div>
+<p id="info" class="small"></p>
+</section>
+
+<section id="result" class="card"></section>
+<main id="quiz"></main>
+<section class="card" style="text-align:center"><button id="checkBottom">✓ Έλεγχος κουίζ</button></section>
+</div>
+
+<script>
+const questions = [{"type": "mcq", "topic": "3.1 Επανάληψη", "q": "Τι επιτρέπει βασικά μια δομή επανάληψης;", "opts": ["Να εκτελεί ένα τμήμα κώδικα πολλές φορές", "Να δηλώνει μεταβλητές", "Να κάνει μόνο είσοδο", "Να τερματίζει πάντα"], "a": 0, "exp": "Η επανάληψη εκτελεί ελεγχόμενα το ίδιο τμήμα κώδικα πολλές φορές."}, {"type": "mcq", "topic": "3.2 DO με μετρητή", "q": "Ποια είναι η σωστή μορφή DO με μετρητή;", "opts": ["do i = 1, 10 ... end do", "do (i=1; i<=10) ...", "repeat i=1 to 10", "for i=1,10 ... end"], "a": 0, "exp": "Η μορφή είναι DO μεταβλητή = αρχή, τέλος [, βήμα] ... END DO."}, {"type": "mcq", "topic": "3.2 DO με μετρητή", "q": "Στο `do i = 1, 10, 2`, ποιες τιμές παίρνει ο i;", "opts": ["1, 3, 5, 7, 9", "1,2,3,...,10", "2,4,6,8,10", "10,8,6,4,2"], "a": 0, "exp": "Το τρίτο όρισμα είναι το βήμα, άρα αυξάνεται κατά 2."}, {"type": "mcq", "topic": "3.2 DO με μετρητή", "q": "Τι σημαίνει `do i = 5, 1, -1`;", "opts": ["Αύξηση 1 έως 5", "Μείωση από 5 έως 1", "Μόνο 5 και 1", "Δεν εκτελείται"], "a": 1, "exp": "Με αρνητικό βήμα ο μετρητής μειώνεται: 5,4,3,2,1."}, {"type": "tf", "topic": "3.2 DO με μετρητή", "q": "Στο DO με μετρητή δεν χρειάζεται να γράψουμε `i=i+1` για να προχωρήσει ο μετρητής.", "a": true, "exp": "Σωστό. Η εξέλιξη του μετρητή γίνεται από τον DO."}, {"type": "mcq", "topic": "3.2 DO με μετρητή", "q": "Ποιο είναι λάθος μέσα σε `do i=1,5`;", "opts": ["print *,i", "s=s+i", "i=i+1", "x=2*i"], "a": 2, "exp": "Ο μετρητής του DO δεν πρέπει να επανακαθορίζεται μέσα στον ίδιο βρόχο."}, {"type": "mcq", "topic": "3.3 Υπολογισμοί σε DO", "q": "Για άθροισμα 1+2+...+5, ποια αρχικοποίηση είναι σωστή;", "opts": ["s=0", "s=1", "s=5", "s=-1"], "a": 0, "exp": "Το άθροισμα ξεκινά από 0."}, {"type": "mcq", "topic": "3.3 Υπολογισμοί σε DO", "q": "Για το 5!, ποια αρχικοποίηση είναι σωστή;", "opts": ["fact=0", "fact=1", "fact=5", "fact=-1"], "a": 1, "exp": "Το γινόμενο/παραγοντικό ξεκινά από 1."}, {"type": "mcq", "topic": "3.4 DO WHILE", "q": "Πότε ελέγχεται η συνθήκη του DO WHILE;", "opts": ["Πριν από κάθε επανάληψη", "Μόνο στο τέλος", "Μόνο μία φορά", "Ποτέ"], "a": 0, "exp": "Το DO WHILE ελέγχει τη συνθήκη στην αρχή."}, {"type": "tf", "topic": "3.4 DO WHILE", "q": "Αν η συνθήκη DO WHILE είναι αρχικά FALSE, το σώμα δεν εκτελείται.", "a": true, "exp": "Σωστό. Ο έλεγχος γίνεται πριν από την πρώτη επανάληψη."}, {"type": "mcq", "topic": "3.4 DO WHILE", "q": "Ποιο πρόβλημα έχει `i=1; do while(i<=10); print *,i; end do`;", "opts": ["Το i είναι REAL", "Το i δεν αλλάζει και ο βρόχος μπορεί να είναι άπειρος", "Το PRINT απαγορεύεται", "Το 10 είναι μεγάλο"], "a": 1, "exp": "Η μεταβλητή της συνθήκης δεν ενημερώνεται."}, {"type": "mcq", "topic": "3.5 DO με EXIT", "q": "Τι κάνει το `EXIT` μέσα σε βρόχο;", "opts": ["Παραλείπει την τρέχουσα επανάληψη", "Βγαίνει από τον τρέχοντα βρόχο", "Ξεκινά από την αρχή", "Τερματίζει πάντα όλο το πρόγραμμα"], "a": 1, "exp": "Το EXIT διακόπτει τον τρέχοντα βρόχο."}, {"type": "mcq", "topic": "3.5 DO με EXIT", "q": "Για άγνωστο πλήθος τιμών μέχρι sentinel -1, ποια δομή ταιριάζει;", "opts": ["DO με γνωστό πλήθος", "DO ... EXIT όταν x==-1", "Μόνο IF", "DO με μετρητή που δεν αλλάζει"], "a": 1, "exp": "Το πλήθος είναι άγνωστο και ο τερματισμός εξαρτάται από ειδική τιμή."}, {"type": "tf", "topic": "3.5 DO με EXIT", "q": "Το EXIT μέσα σε έναν βρόχο διακόπτει τον τρέχοντα βρόχο.", "a": true, "exp": "Σωστό."}, {"type": "mcq", "topic": "3.6 CYCLE", "q": "Τι κάνει το `CYCLE`;", "opts": ["Βγαίνει από τον βρόχο", "Παραλείπει το υπόλοιπο της τρέχουσας επανάληψης", "Τερματίζει το πρόγραμμα", "Μηδενίζει τον μετρητή"], "a": 1, "exp": "Το CYCLE προχωρά στην επόμενη επανάληψη."}, {"type": "mcq", "topic": "3.6 CYCLE", "q": "Στο `do i=1,5; if(i==3) cycle; print *,i; end do`, τι εμφανίζεται;", "opts": ["1 2 3 4 5", "1 2 4 5", "3 μόνο", "1 2"], "a": 1, "exp": "Για i=3 το CYCLE παραλείπει το PRINT."}, {"type": "mcq", "topic": "3.6 CYCLE", "q": "Γιατί ένα CYCLE μπορεί να προκαλέσει άπειρο βρόχο σε DO WHILE;", "opts": ["Αυξάνει τον μετρητή", "Μπορεί να παρακάμψει την ενημέρωση της μεταβλητής ελέγχου", "Τερματίζει το πρόγραμμα", "Δεν επιτρέπεται"], "a": 1, "exp": "Αν παρακάμπτεται η ενημέρωση, η συνθήκη μπορεί να παραμένει TRUE."}, {"type": "mcq", "topic": "3.7 Έναρξη και τερματισμός", "q": "Σε `i=10; do while(i<5); ...; end do`, πόσες φορές εκτελείται το σώμα;", "opts": ["0", "1", "5", "10"], "a": 0, "exp": "Η αρχική συνθήκη είναι FALSE."}, {"type": "mcq", "topic": "3.7 Έναρξη και τερματισμός", "q": "Σε `i=1; do while(i<=10); i=i-1; end do`, ποιο είναι το πρόβλημα;", "opts": ["Το i είναι αρχικά 1", "Το i αλλάζει προς λάθος κατεύθυνση", "Υπάρχει DO WHILE", "Το 10 είναι θετικό"], "a": 1, "exp": "Το i απομακρύνεται από την τιμή που θα έκανε τη συνθήκη FALSE."}, {"type": "mcq", "topic": "3.8 Εμφωλευμένοι βρόχοι", "q": "Τι σημαίνει εμφωλευμένοι βρόχοι;", "opts": ["Δύο ανεξάρτητα προγράμματα", "Ένας βρόχος μέσα σε άλλον", "IF έξω από πρόγραμμα", "Βρόχος χωρίς END DO"], "a": 1, "exp": "Ο εσωτερικός βρόχος βρίσκεται στο σώμα του εξωτερικού."}, {"type": "mcq", "topic": "3.8 Εμφωλευμένοι βρόχοι", "q": "Σε εξωτερικό DO 3 επαναλήψεων και εσωτερικό DO 4, πόσες φορές εκτελείται συνολικά η εντολή του εσωτερικού;", "opts": ["3", "4", "7", "12"], "a": 3, "exp": "3 × 4 = 12."}, {"type": "mcq", "topic": "3.8 Μορφοποίηση WRITE", "q": "Στο `write (*,'(i5)',advance='no') a`, τι σημαίνει `i5`;", "opts": ["Ακέραιος σε πεδίο πλάτους 5 χαρακτήρων", "Εκτύπωση 5 φορές", "5 δεκαδικά", "Πέμπτη μεταβλητή"], "a": 0, "exp": "I δηλώνει ακέραιο και 5 το πλάτος του πεδίου."}, {"type": "mcq", "topic": "3.8 Μορφοποίηση WRITE", "q": "Τι κάνει το `advance='no'`;", "opts": ["Δεν αλλάζει γραμμή μετά την εκτύπωση", "Δεν εκτυπώνει", "Επαναλαμβάνει το WRITE", "Τυπώνει μόνο INTEGER"], "a": 0, "exp": "Η επόμενη εκτύπωση συνεχίζει στην ίδια γραμμή."}, {"type": "mcq", "topic": "3.9 IF + DO", "q": "Πώς τυπώνουμε μόνο άρτιους αριθμούς 1 έως 10;", "opts": ["if(mod(i,2)==0) then print *,i end if", "if(mod(i,2)==1) then print *,i end if", "if(i/2==0) then print *,i end if", "if(i==2) then print *,i end if"], "a": 0, "exp": "Άρτιος σημαίνει υπόλοιπο 0 στη διαίρεση με 2."}, {"type": "mcq", "topic": "3.10 Από εκφώνηση σε επανάληψη", "q": "Η εκφώνηση λέει «για τους αριθμούς 1 έως 100». Τι επιλέγεις φυσικά;", "opts": ["DO με μετρητή", "DO WHILE χωρίς ενημέρωση", "Μόνο IF", "EXIT χωρίς βρόχο"], "a": 0, "exp": "Το εύρος είναι γνωστό."}, {"type": "mcq", "topic": "3.10 Από εκφώνηση σε επανάληψη", "q": "Η εκφώνηση λέει «διάβαζε τιμές μέχρι να δοθεί -1». Τι ταιριάζει;", "opts": ["DO με γνωστό πλήθος", "DO + EXIT όταν εμφανιστεί -1", "Μόνο PRINT", "DO με μετρητή που δεν αλλάζει"], "a": 1, "exp": "Το πλήθος είναι άγνωστο και υπάρχει sentinel."}, {"type": "mcq", "topic": "3.10 Σειρές", "q": "Ποια είναι η σωστή γενική λογική για άθροισμα σειράς;", "opts": ["Αρχικοποίηση → όρος → προσθήκη → επόμενος όρος", "Μόνο τελική εκτύπωση", "EXIT σε κάθε επανάληψη", "Μηδενισμός σε κάθε επανάληψη"], "a": 0, "exp": "Κάθε επανάληψη ενημερώνει το συσσωρευμένο άθροισμα."}, {"type": "mcq", "topic": "3.11 Συχνά λάθη", "q": "Ποιο μπορεί να οδηγήσει σε άπειρο DO WHILE;", "opts": ["Η σωστή ενημέρωση", "Η συνθήκη γίνεται FALSE", "Η μεταβλητή ελέγχου δεν αλλάζει", "Η χρήση PRINT"], "a": 2, "exp": "Χωρίς αλλαγή της μεταβλητής, η συνθήκη μπορεί να παραμένει TRUE."}, {"type": "tf", "topic": "3.11 Συχνά λάθη", "q": "Το ότι γράφουμε `i=i+1` αρκεί από μόνο του για να εγγυηθεί τερματισμό ενός DO WHILE.", "a": false, "exp": "Λάθος. Η ενημέρωση πρέπει να οδηγεί τη συνθήκη προς FALSE."}, {"type": "mcq", "topic": "3.11 Συχνά λάθη", "q": "Σε `if(i==5) cycle` μέσα σε DO WHILE, τι πρέπει να προσέξεις;", "opts": ["Αν το CYCLE παρακάμπτει την ενημέρωση του i", "Αν υπάρχει PRINT μετά το END PROGRAM", "Αν το i είναι CHARACTER", "Αν υπάρχει READ"], "a": 0, "exp": "Αν παρακαμφθεί η ενημέρωση, μπορεί να κολλήσει στην ίδια τιμή."}, {"type": "mcq", "topic": "3.12 Έλεγχος γνώσεων", "q": "Ποια αντιστοίχιση είναι σωστή;", "opts": ["DO→γνωστό πλήθος, DO WHILE→συνθήκη στην αρχή, EXIT→έξοδος, CYCLE→παράλειψη επανάληψης", "DO→μόνο άπειροι, EXIT→επόμενη επανάληψη, CYCLE→έξοδος", "DO WHILE→πάντα γνωστό πλήθος, CYCLE→τερματισμός", "EXIT→επανάληψη, CYCLE→δήλωση"], "a": 0, "exp": "Αυτή είναι η βασική εικόνα των δομών του κεφαλαίου."}, {"type": "tf", "topic": "3.12 Έλεγχος γνώσεων", "q": "Σε εμφωλευμένους βρόχους, ένα απλό CYCLE αφορά τον τρέχοντα εσωτερικό βρόχο.", "a": true, "exp": "Σωστό. Χωρίς ονομασμένη δομή αφορά τον τρέχοντα βρόχο."}];
+let mode = "learn";
+let order = questions.map((_,i)=>i);
+let rendered = [];
+
+const $ = id => document.getElementById(id);
+const hints = {
+"3.1 Επανάληψη":"Σκέψου αν το ίδιο τμήμα κώδικα πρέπει να εκτελεστεί πολλές φορές.",
+"3.2 DO με μετρητή":"Έλεγξε αρχή, τέλος και βήμα.",
+"3.3 Υπολογισμοί σε DO":"Άθροισμα ξεκινά από 0, γινόμενο από 1.",
+"3.4 DO WHILE":"Η συνθήκη ελέγχεται πριν από κάθε επανάληψη.",
+"3.5 DO με EXIT":"EXIT = βγες από τον τρέχοντα βρόχο.",
+"3.6 CYCLE":"CYCLE = παράλειψε το υπόλοιπο της τρέχουσας επανάληψης.",
+"3.7 Έναρξη και τερματισμός":"Έλεγξε αρχική τιμή, συνθήκη και ενημέρωση.",
+"3.8 Εμφωλευμένοι βρόχοι":"Ο εσωτερικός βρόχος ολοκληρώνεται για κάθε τιμή του εξωτερικού.",
+"3.8 Μορφοποίηση WRITE":"I = ακέραιος, ο αριθμός = πλάτος πεδίου.",
+"3.9 IF + DO":"Σκέψου ποια ενέργεια πρέπει να γίνεται μόνο όταν ισχύει η συνθήκη.",
+"3.10 Από εκφώνηση σε επανάληψη":"Ρώτησε πρώτα: γνωρίζω το πλήθος ή όχι;",
+"3.10 Σειρές":"Κάθε επανάληψη υπολογίζει έναν όρο και ενημερώνει το αποτέλεσμα.",
+"3.11 Συχνά λάθη":"Έλεγξε αρχικοποίηση, όρια, ενημέρωση και θέση EXIT/CYCLE.",
+"3.12 Έλεγχος γνώσεων":"Θυμήσου τον ρόλο κάθε δομής."
+};
+
+function esc(x){
+ return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+}
+function ids(){
+ const t=$("typeFilter").value, p=$("topicFilter").value;
+ return order.filter(i=>(t==="all"||questions[i].type===t)&&(p==="all"||questions[i].topic===p));
+}
+function render(){
+ const root=$("quiz"); root.innerHTML=""; rendered=ids();
+ rendered.forEach((n,k)=>{
+  const q=questions[n], article=document.createElement("article");
+  article.className="card";
+  let body="";
+  if(q.type==="mcq"){
+   const opts=q.opts.map((x,i)=>({x,i})).sort(()=>Math.random()-.5);
+   body=opts.map(o=>`<label class="option"><input type="radio" name="q${n}" value="${o.i}"> ${esc(o.x)}</label>`).join("");
+  }else{
+   body=`<label class="option"><input type="radio" name="q${n}" value="true"> Σωστό</label>
+         <label class="option"><input type="radio" name="q${n}" value="false"> Λάθος</label>`;
+  }
+  const hint=mode==="learn"?
+    `<button class="alt hintBtn" data-n="${n}">💡 Hint</button><div class="hint" id="hint${n}">${esc(hints[q.topic]||"Έλεγξε προσεκτικά τη λογική του βρόχου.")}</div>`:"";
+  article.innerHTML=`<div class="meta">${k+1}. ${esc(q.topic)} · ${q.type==="mcq"?"Πολλαπλής επιλογής":"Σωστό / Λάθος"}</div>
+  <div class="question">${esc(q.q)}</div><div>${body}</div>${hint}
+  <div id="fb${n}" class="feedback"></div>`;
+  root.appendChild(article);
+ });
+ document.querySelectorAll(".hintBtn").forEach(b=>b.onclick=()=>{
+   const h=$("hint"+b.dataset.n); h.style.display=h.style.display==="block"?"none":"block";
+ });
+ $("info").textContent=`${rendered.length} ερωτήσεις · ${mode==="learn"?"Τα hints είναι διαθέσιμα.":"Στην Εξέταση πρέπει να απαντηθούν όλες."}`;
+ $("result").style.display="none";
+}
+function answer(n,q){
+ const e=document.querySelector(`input[name="q${n}"]:checked`);
+ if(!e) return null;
+ return q.type==="mcq"?Number(e.value):e.value==="true";
+}
+function check(){
+ if(mode==="exam" && !$("studentName").value.trim()){
+   alert("Συμπλήρωσε το ονοματεπώνυμο πριν από τον έλεγχο."); return;
+ }
+ const missing=rendered.filter(n=>answer(n,questions[n])===null);
+ if(missing.length){alert("Υπάρχουν "+missing.length+" ερωτήσεις χωρίς απάντηση.");return;}
+ let score=0;
+ rendered.forEach(n=>{
+   const q=questions[n], ok=answer(n,q)===q.a; if(ok) score++;
+   const f=$("fb"+n); f.style.display="block"; f.className="feedback "+(ok?"good":"bad");
+   f.innerHTML=(ok?"✓ <b>Σωστό.</b> ":"✗ <b>Λάθος.</b> ")+esc(q.exp);
+ });
+ const pct=Math.round(score/rendered.length*100);
+ $("result").style.display="block";
+ $("result").innerHTML=`<div class="score">${score} / ${rendered.length} · ${pct}%</div>
+ <p>${mode==="exam"?"Αποτέλεσμα εξέτασης για <b>"+esc($("studentName").value.trim())+"</b>.":"Ο έλεγχος ολοκληρώθηκε."}</p>`;
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function setMode(m){
+ mode=m;
+ $("learnBtn").className=m==="learn"?"":"alt";
+ $("examBtn").className=m==="exam"?"":"alt";
+ $("studentArea").style.display=m==="exam"?"block":"none";
+ render();
+}
+function shuffle(){order.sort(()=>Math.random()-0.5);render();}
+function resetQuiz(){order=questions.map((_,i)=>i);$("studentName").value="";render();window.scrollTo({top:0,behavior:"smooth"});}
+
+[ "learnBtn","examBtn","shuffleBtn","resetBtn","checkBtn","checkBottom" ].forEach(id=>{
+ if(id==="learnBtn") $(id).onclick=()=>setMode("learn");
+ else if(id==="examBtn") $(id).onclick=()=>setMode("exam");
+ else if(id==="shuffleBtn") $(id).onclick=shuffle;
+ else if(id==="resetBtn") $(id).onclick=resetQuiz;
+ else $(id).onclick=check;
+});
+$("typeFilter").onchange=render;
+$("topicFilter").onchange=render;
+[...new Set(questions.map(q=>q.topic))].sort((a,b)=>a.localeCompare(b,"el")).forEach(t=>$("topicFilter").add(new Option(t,t)));
+setMode("learn");
+</script>
+</body>
+</html>
