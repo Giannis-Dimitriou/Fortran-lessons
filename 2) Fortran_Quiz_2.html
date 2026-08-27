@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fortran Tutor — Quiz 2</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f5f7fb;color:#172033;margin:0}
+.wrap{max-width:980px;margin:auto;padding:22px}
+.hero{background:linear-gradient(135deg,#17365d,#2f75b5);color:white;border-radius:18px;padding:28px;margin-bottom:18px}
+.panel,.card,.result{background:white;border:1px solid #d9e2f3;border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 3px 12px rgba(20,40,70,.06)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,select,input{font:inherit} button{border:0;border-radius:9px;padding:10px 14px;background:#2f75b5;color:white;cursor:pointer}
+button.secondary{background:#e9eef7;color:#17365d} button.warn{background:#c55a11}
+.mode{display:flex;gap:6px} .active{outline:3px solid #b7d2ed}
+.stats,.note{color:#5d6878;font-size:14px;margin-top:10px}
+.note{background:#fff5e8;border-left:4px solid #c55a11;padding:10px}
+.student{display:none;margin-top:14px} .student input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccd5e3;border-radius:8px;margin-top:5px}
+.meta{font-size:13px;color:#667085;margin-bottom:10px} .q{font-size:17px;line-height:1.5;white-space:pre-wrap}
+.opts{display:grid;gap:8px;margin-top:12px} .opt{border:1px solid #d9e2f3;border-radius:9px;padding:11px;cursor:pointer;background:#fbfcfe}
+.opt:hover{background:#eef5fb} .feedback{display:none;margin-top:12px;padding:11px;border-radius:9px}
+.correct{background:#e2f0d9;border:1px solid #548235} .wrong{background:#fce4d6;border:1px solid #c55a11}
+.hint{display:none;background:#eef5fb;border-left:4px solid #2f75b5;padding:9px;margin-top:8px}
+.code{font-family:Consolas,monospace;background:#172033;color:#f4f7fb;padding:12px;border-radius:9px;white-space:pre-wrap}
+.score{font-size:28px;font-weight:bold;color:#17365d} .status{margin-top:10px;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="hero">
+<h1>Fortran Tutor — Quiz 2</h1>
+<p>Κεφάλαιο 2 · Δομές επιλογής και λογικές συνθήκες</p>
+<p style="opacity:.9">Διαδραστική εξάσκηση με λειτουργία Μάθησης και λειτουργία Εξέτασης. Οι επιλογές πολλαπλής αλλάζουν τυχαία θέση κάθε φορά που εμφανίζεται μια ερώτηση.</p>
+</section>
+
+<section class="panel">
+<div class="toolbar">
+<div class="mode">
+<button id="learnBtn" onclick="setMode('learn')">📘 Μάθηση</button>
+<button id="examBtn" class="secondary" onclick="setMode('exam')">📝 Εξέταση</button>
+</div>
+<select id="typeFilter" onchange="render()"><option value="all">Όλοι οι τύποι</option><option value="mcq">Πολλαπλής επιλογής</option><option value="tf">Σωστό / Λάθος</option></select>
+<select id="topicFilter" onchange="render()"><option value="all">Όλες οι ενότητες</option></select>
+<button class="secondary" onclick="shuffle()">🔀 Τυχαία σειρά</button>
+<button class="warn" onclick="resetQuiz()">↺ Επαναφορά</button>
+<button onclick="checkQuiz()">✓ Έλεγχος</button>
+</div>
+<div id="stats" class="stats"></div>
+<div id="note" class="note" style="display:none">Στην Εξέταση πρέπει να απαντηθούν όλες οι ερωτήσεις και να συμπληρωθεί το ονοματεπώνυμο πριν γίνει ο έλεγχος.</div>
+<div class="stats">📧 Στην Εξέταση το αποτέλεσμα αποστέλλεται μέσω Web3Forms. Για να λειτουργήσει, χρειάζεται το δικό σου Access Key (και το email παραλήπτη να είναι ρυθμισμένο στον λογαριασμό Web3Forms).</div>
+<div id="studentBox" class="student">
+<label>Ονοματεπώνυμο φοιτητή *</label>
+<input id="studentName" autocomplete="name" placeholder="π.χ. Γιάννης Παπαδόπουλος">
+</div>
+</section>
+
+<section id="result" class="result" style="display:none"></section>
+<div id="quiz"></div>
+<section class="panel" style="text-align:center">
+<button onclick="checkQuiz()">✓ Έλεγχος κουίζ</button>
+</section>
+</div>
+
+<script>
+const Q=[{"type": "mcq", "topic": "IF / THEN", "q": "Ποια είναι η σωστή βασική μορφή μιας δομής επιλογής IF στη Fortran;", "opts": ["if (συνθήκη) then ... end if", "if συνθήκη do ... end if", "if [συνθήκη] then ... endif", "when (συνθήκη) then ... end"], "a": 0, "exp": "Η βασική μορφή που παρουσιάζεται στο υλικό είναι IF (συνθήκη) THEN ... END IF."}, {"type": "mcq", "topic": "2.2 LOGICAL και συνθήκες", "q": "Ποιος τύπος δεδομένων της Fortran χρησιμοποιείται για λογικές τιμές όπως .TRUE. και .FALSE.;", "a": 0, "exp": "Ο τύπος LOGICAL χρησιμοποιείται για λογικές τιμές .TRUE. και .FALSE. Μια σύγκριση, όπως x > 0, επίσης αξιολογείται σε TRUE ή FALSE.", "opts": ["LOGICAL", "INTEGER", "REAL", "CHARACTER"]}, {"type": "mcq", "topic": "IF / ELSE", "q": "Τι συμβαίνει όταν η συνθήκη του IF είναι .FALSE. και υπάρχει ELSE;", "opts": ["Εκτελείται το τμήμα του THEN", "Εκτελείται το τμήμα του ELSE", "Εκτελούνται και τα δύο", "Το πρόγραμμα τερματίζει"], "a": 1, "exp": "Όταν η συνθήκη είναι .FALSE., εκτελείται το τμήμα ELSE."}, {"type": "mcq", "topic": "IF / ELSE IF", "q": "Σε μια αλυσίδα IF ... ELSE IF ... ELSE, πόσα από τα εναλλακτικά τμήματα εκτελούνται όταν βρεθεί η πρώτη TRUE συνθήκη;", "opts": ["Κανένα", "Όλα", "Μόνο ένα", "Όσα έχουν TRUE μετά από αυτή"], "a": 2, "exp": "Το υλικό τονίζει ότι από τις εναλλακτικές εκφράσεις εκτελείται μόνο μία: η πρώτη της οποίας η συνθήκη είναι TRUE."}, {"type": "mcq", "topic": "Συγκρίσεις", "q": "Ποια παλαιότερη γραφή αντιστοιχεί στη σύγχρονη σύγκριση x >= 5;", "opts": ["x .GT. 5", "x .GE. 5", "x .LE. 5", "x .EQ. 5"], "a": 1, "exp": "Το .GE. αντιστοιχεί στο >= (greater than or equal)."}, {"type": "mcq", "topic": "Συγκρίσεις", "q": "Ποια συνθήκη ελέγχει ότι ο ακέραιος n είναι διαφορετικός από 0;", "opts": ["n =/= 0", "n != 0", "n /= 0", "n .DIFF. 0"], "a": 2, "exp": "Στη Fortran η σύγχρονη γραφή για «διάφορο» είναι /=."}, {"type": "mcq", "topic": "Λογικοί τελεστές", "q": "Ποια έκφραση είναι TRUE μόνο όταν και οι δύο συνθήκες a και b είναι TRUE;", "opts": ["a .OR. b", "a .NOT. b", "a .AND. b", "a .NEQV. b"], "a": 2, "exp": "Ο .AND. είναι TRUE μόνο όταν και οι δύο λογικές τιμές είναι TRUE."}, {"type": "mcq", "topic": "Λογικοί τελεστές", "q": "Αν a=.TRUE. και b=.FALSE., ποιο είναι το αποτέλεσμα του a .OR. b;", "opts": [".TRUE.", " .FALSE.", "Δεν ορίζεται", "Εξαρτάται από τον τύπο των a,b"], "a": 0, "exp": "Με .OR. αρκεί μία από τις δύο λογικές τιμές να είναι TRUE."}, {"type": "tf", "topic": "Λογικοί τελεστές", "q": "Η έκφραση .NOT. .TRUE. δίνει .FALSE.", "a": true, "exp": "Σωστό. Ο .NOT. αντιστρέφει τη λογική τιμή."}, {"type": "mcq", "topic": "Λογικοί τελεστές", "q": "Αν a=.TRUE. και b=.FALSE., ποιο είναι το αποτέλεσμα του a .EQV. b;", "opts": [".TRUE.", " .FALSE.", "Δεν ορίζεται", "Εξαρτάται από τη σειρά"], "a": 1, "exp": "Το .EQV. είναι TRUE όταν οι δύο λογικές τιμές είναι ίδιες. Εδώ είναι διαφορετικές, άρα FALSE."}, {"type": "mcq", "topic": "Σύνθετες συνθήκες", "q": "Ποια συνθήκη ελέγχει ότι το x βρίσκεται στο διάστημα [0,10];", "opts": ["x >= 0 .AND. x <= 10", "x >= 0 .OR. x <= 10", "x > 0 .AND. x > 10", "x == 0 .AND. x == 10"], "a": 0, "exp": "Για να ισχύουν και τα δύο όρια ταυτόχρονα χρησιμοποιούμε .AND."}, {"type": "tf", "topic": "Βρες το λάθος", "q": "Στη Fortran η συνθήκη ενός IF μπορεί να είναι απλώς ένας αριθμός, π.χ. if (x) then, χωρίς ο x να είναι LOGICAL.", "a": false, "exp": "Λάθος. Η συνθήκη IF πρέπει να είναι λογική έκφραση, δηλαδή να αξιολογείται σε TRUE ή FALSE."}, {"type": "mcq", "topic": "Βαθμολογία με IF", "q": "Σε μια αλυσίδα για βαθμούς, ποια σειρά ελέγχων είναι σωστότερη αν θέλουμε A για >=9, B για >=8, C για >=7;", "opts": [">=7, μετά >=8, μετά >=9", ">=9, μετά >=8, μετά >=7", "==9, ==8, ==7", ">=8, μετά >=7, μετά >=9"], "a": 1, "exp": "Ελέγχουμε από το μεγαλύτερο όριο προς το μικρότερο. Έτσι, π.χ. ο βαθμός 9.5 δεν θα σταματήσει νωρίτερα σε >=7."}, {"type": "mcq", "topic": "2.3 Συγκρίσεις", "q": "Ποια αντιστοίχιση είναι πλήρως σωστή;", "opts": ["< ↔ .LT. και >= ↔ .GE.", "< ↔ .LE. και >= ↔ .GT.", "== ↔ .NE. και /= ↔ .EQ.", "> ↔ .LT. και <= ↔ .GE."], "a": 0, "exp": "Οι έξι σύγχρονες συγκρίσεις έχουν αντίστοιχες παλαιότερες μορφές: < .LT., <= .LE., == .EQ., /= .NE., >= .GE., > .GT."}, {"type": "mcq", "topic": "2.4 Λογικοί τελεστές", "q": "Αν a=.TRUE. και b=.FALSE., ποια είναι η τιμή του a .NEQV. b;", "opts": [".TRUE.", ".FALSE.", "Δεν ορίζεται", "Εξαρτάται από τη σειρά"], "a": 0, "exp": "Το .NEQV. είναι TRUE όταν οι δύο λογικές τιμές είναι διαφορετικές. Εδώ είναι TRUE και FALSE, άρα TRUE."}, {"type": "mcq", "topic": "2.4 Λογικοί τελεστές", "q": "Αν a=.TRUE. και b=.TRUE., ποια είναι η τιμή του a .EQV. b;", "opts": [".TRUE.", ".FALSE.", "Δεν ορίζεται", "Μόνο αν είναι INTEGER"], "a": 0, "exp": "Το .EQV. είναι TRUE όταν οι δύο λογικές τιμές είναι ίδιες."}, {"type": "tf", "topic": "2.8 Εμφωλευμένα IF", "q": "Σε εμφωλευμένο IF, το εσωτερικό IF είναι μια πλήρης δομή IF ... END IF που βρίσκεται μέσα σε έναν κλάδο του εξωτερικού IF.", "a": true, "exp": "Σωστό. Αυτό ακριβώς σημαίνει εμφώλευση: μια πλήρης δομή επιλογής βρίσκεται μέσα σε έναν κλάδο άλλης δομής."}, {"type": "mcq", "topic": "2.9 Έλεγχος εγκυρότητας", "q": "Ποια είναι η σωστή λογική για να μην υπολογίσουμε τον όγκο σφαίρας όταν η ακτίνα είναι αρνητική;", "opts": ["if (r < 0) then μήνυμα else υπολογισμός", "if (r > 0) then μήνυμα else υπολογισμός", "Υπολογίζουμε πάντα πρώτα τον όγκο", "if (r == 0) then μήνυμα else υπολογισμός"], "a": 0, "exp": "Πρώτα ελέγχουμε την μη έγκυρη περίπτωση r<0. Μόνο στο ELSE εκτελούμε τον υπολογισμό."}, {"type": "mcq", "topic": "2.10 REAL και ανοχή", "q": "Τι σημαίνει το 1.e-4 στη Fortran;", "opts": ["1 × 10^-4 = 0.0001", "1 × 10^4 = 10000", "1/4 = 0.25", "0.00001"], "a": 0, "exp": "Η γραφή e-4 σημαίνει επί 10 στη δύναμη -4, άρα 1.e-4 = 0.0001."}, {"type": "mcq", "topic": "2.10 REAL και ανοχή", "q": "Τι επιστρέφει η έκφραση ABS(-0.0003);", "opts": ["0.0003", "-0.0003", "0.00003", "FALSE"], "a": 0, "exp": "Η ABS δίνει την απόλυτη τιμή, δηλαδή την τιμή χωρίς το πρόσημο."}, {"type": "mcq", "topic": "2.10 REAL και ανοχή", "q": "Γιατί μπορεί να χρησιμοποιούμε if (abs(a-b) < 1.e-4) αντί για if (a == b) όταν a και b είναι αποτελέσματα υπολογισμών REAL;", "opts": ["Επειδή δεχόμαστε μια πολύ μικρή διαφορά ως αρκετά κοντινή", "Επειδή το == δεν υπάρχει στη Fortran", "Επειδή το ABS μετατρέπει REAL σε INTEGER", "Επειδή το 1.e-4 σημαίνει TRUE"], "a": 0, "exp": "Η ανοχή επιτρέπει μια μικρή διαφορά λόγω πεπερασμένης ακρίβειας αναπαράστασης των REAL."}, {"type": "tf", "topic": "2.10 REAL και ανοχή", "q": "Η ανοχή είναι απαραίτητη σε κάθε σύγκριση ορίων, όπως x >= 0 ή x <= 10.", "a": false, "exp": "Λάθος. Στις απλές συγκρίσεις ορίων χρησιμοποιούμε κανονικά >, <, >=, <=. Η ανοχή αφορά κυρίως αποτελέσματα υπολογισμών REAL."}, {"type": "mcq", "topic": "2.11 Από εκφώνηση σε IF", "q": "Ποια σειρά ακολουθούμε για να μετατρέψουμε μια εκφώνηση σε IF;", "opts": ["Δεδομένα → Ζητούμενα → Περιπτώσεις → Συνθήκες → IF δομή → Έλεγχος", "IF → Κώδικας → Περιπτώσεις → Δεδομένα → Έλεγχος", "Κώδικας → Εκτύπωση → Συνθήκες → Δεδομένα", "Μόνο συνθήκη → END IF"], "a": 0, "exp": "Η μεθοδολογία του κεφαλαίου είναι: δεδομένα, ζητούμενα, περιπτώσεις, συνθήκες, επιλογή δομής IF και τελικός έλεγχος πληρότητας."}, {"type": "mcq", "topic": "2.12 Συχνά λάθη", "q": "Για το διάστημα 0 ≤ x ≤ 10 ποια είναι η σωστή λογική συνθήκη;", "opts": ["x >= 0 .AND. x <= 10", "x >= 0 .OR. x <= 10", "x > 0 .AND. x > 10", "x == 0 .AND. x == 10"], "a": 0, "exp": "Πρέπει να ισχύουν ταυτόχρονα και τα δύο όρια, άρα χρησιμοποιούμε .AND."}, {"type": "mcq", "topic": "2.12 Συχνά λάθη", "q": "Ποιο από τα παρακάτω είναι συχνό λάθος που επισημαίνουν οι σημειώσεις;", "opts": ["Να μπερδεύουμε = με ==", "Να χρησιμοποιούμε END IF", "Να ελέγχουμε όλες τις περιπτώσεις", "Να χρησιμοποιούμε MOD από το Κεφάλαιο 1"], "a": 0, "exp": "Η εκχώρηση = και η σύγκριση == είναι διαφορετικά πράγματα. Η σύγχυσή τους είναι βασικό συχνό λάθος."}, {"type": "mcq", "topic": "2.13 Ασκήσεις εφαρμογής", "q": "Στην άσκηση της πρωτοβάθμιας ax=b, τι ισχύει όταν a=0 και b=0;", "opts": ["Άπειρες λύσεις", "Μία λύση x=0", "Καμία λύση", "Δεν μπορούμε να αποφασίσουμε"], "a": 0, "exp": "Όταν a=0 και b=0, η σχέση γίνεται 0=0, άρα υπάρχουν άπειρες λύσεις."}, {"type": "mcq", "topic": "2.13 Ασκήσεις εφαρμογής", "q": "Στην άσκηση της δευτεροβάθμιας εξίσωσης, τι κάνουμε πρώτα όταν ελέγχουμε την εξίσωση ax²+bx+c=0;", "opts": ["Ελέγχουμε αν a=0", "Υπολογίζουμε πάντα πρώτα SQRT της διακρίνουσας", "Ελέγχουμε μόνο αν c=0", "Υπολογίζουμε πάντα δύο ρίζες"], "a": 0, "exp": "Πρώτα ελέγχουμε αν a=0. Αν είναι μηδέν, δεν έχουμε κανονική δευτεροβάθμια εξίσωση και πρέπει να διερευνήσουμε ξεχωριστά την περίπτωση."}, {"type": "mcq", "topic": "2.13 Ασκήσεις εφαρμογής", "q": "Στην άσκηση ελέγχου διαστήματος [22,25.5], ποια τιμή πρέπει να θεωρηθεί έγκυρη;", "opts": ["22.0", "21.9", "25.6", "26.0"], "a": 0, "exp": "Το [22,25.5] είναι κλειστό διάστημα, άρα περιλαμβάνει και το 22 και το 25.5."}, {"type": "tf", "topic": "2.14 Checklist", "q": "Πριν προχωρήσουμε, πρέπει να μπορούμε να αναγνωρίζουμε πότε χρειάζεται ανοχή στη σύγκριση REAL.", "a": true, "exp": "Σωστό. Είναι ένα από τα σημεία του checklist του κεφαλαίου."}, {"type": "mcq", "topic": "2.1 Έλεγχος ροής", "q": "Όταν μια εκφώνηση λέει «αν...», «διαφορετικά...» ή «ανάλογα με...», ποια νέα ανάγκη εμφανίζεται σε σχέση με ένα καθαρά σειριακό πρόγραμμα;", "opts": ["Χρειαζόμαστε έλεγχο ροής και επιλογή κλάδου", "Χρειαζόμαστε μόνο περισσότερες μεταβλητές", "Χρειαζόμαστε πάντα πίνακα", "Δεν αλλάζει τίποτα στη λογική του προγράμματος"], "a": 0, "exp": "Τέτοιες διατυπώσεις σημαίνουν ότι διαφορετικές περιπτώσεις οδηγούν σε διαφορετικό δρόμο εκτέλεσης, άρα χρειαζόμαστε έλεγχο ροής."}];
+const WEB3FORMS_ACCESS_KEY=""; // <-- ΒΑΛΕ ΕΔΩ το Web3Forms Access Key πριν το ανέβασμα στο GitHub.
+let mode='learn', order=[...Q.keys()], results={};
+
+const hints={
+"IF / THEN":"Κοίτα αν η συνθήκη γίνεται TRUE ή FALSE.",
+"IF / ELSE":"Το ELSE είναι η εναλλακτική όταν το IF είναι FALSE.",
+"IF / ELSE IF":"Σκέψου ποια είναι η ΠΡΩΤΗ συνθήκη που γίνεται TRUE.",
+"Συγκρίσεις":"Θυμήσου τον πίνακα σύγχρονων ↔ παλαιότερων τελεστών.",
+"Λογικοί τελεστές":"AND = και, OR = ή, NOT = άρνηση.",
+"Σύνθετες συνθήκες":"Ρώτησε αν χρειάζονται και οι δύο συνθήκες ή αρκεί μία.",
+"Τι εκτελείται":"Ακολούθησε τη ροή βήμα-βήμα.",
+"Βρες το λάθος":"Έλεγξε τη δομή IF, τα ELSE και το END IF.",
+"MOD και IF":"MOD(n,2) δίνει το υπόλοιπο της διαίρεσης με το 2.",
+"Βαθμολογία με IF":"Στην αλυσίδα με ELSE IF η σειρά των ορίων έχει σημασία.",
+"Συνδυασμός":"Μετέτρεψε το «και» σε .AND. και το «ή» σε .OR.",
+"Ροή εκτέλεσης":"Μετά το END IF το πρόγραμμα συνεχίζει κανονικά."
+};
+
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function label(t){return t==='mcq'?'Πολλαπλής επιλογής':'Σωστό / Λάθος'}
+function render(){
+ quiz.innerHTML=''; let ids=getIds();
+ ids.forEach((n,k)=>{
+  const q=Q[n],c=document.createElement('article'); c.className='card'; c.dataset.n=n;
+  let text=esc(q.q).replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+  if(q.q.includes('\n')) text='<div>'+text+'</div>';
+  let body;
+  if(q.type==='mcq'){
+   const op=q.opts.map((text,idx)=>({text,idx}));
+   for(let i=op.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[op[i],op[j]]=[op[j],op[i]];}
+   body='<div class="opts">'+op.map((o,j)=>`<label class="opt"><input type="radio" name="q${n}" value="${o.idx}"> ${esc(o.text)}</label>`).join('')+'</div>';
+  }else{
+   body='<div class="opts"><label class="opt"><input type="radio" name="q'+n+'" value="true"> Σωστό</label><label class="opt"><input type="radio" name="q'+n+'" value="false"> Λάθος</label></div>';
+  }
+  let hint=mode==='learn'?`<button class="secondary" style="margin-top:9px" onclick="showHint(${n})">💡 Hint</button><div class="hint" id="h${n}">${hints[q.topic]||'Έλεγξε προσεκτικά τη λογική της συνθήκης.'}</div>`:'';
+  c.innerHTML=`<div class="meta">${k+1}. ${esc(q.topic)} · ${label(q.type)}</div><div class="q">${text}</div>${body}${hint}<div class="feedback" id="f${n}"></div>`;
+  quiz.appendChild(c);
+ });
+ stats.textContent=`${ids.length} ερωτήσεις · ${mode==='learn'?'Τα hints είναι διαθέσιμα.':'Όλες οι ερωτήσεις και το ονοματεπώνυμο είναι υποχρεωτικά.'}`;
+ result.style.display='none';
+}
+function getIds(){let t=typeFilter.value,p=topicFilter.value;return order.filter(i=>(t==='all'||Q[i].type===t)&&(p==='all'||Q[i].topic===p))}
+function init(){[...new Set(Q.map(q=>q.topic))].sort((a,b)=>a.localeCompare(b,'el')).forEach(t=>topicFilter.add(new Option(t,t)));setMode('learn')}
+function setMode(m){mode=m;learnBtn.className=m==='learn'?'':'secondary';examBtn.className=m==='exam'?'':'secondary';note.style.display=m==='exam'?'block':'none';studentBox.style.display=m==='exam'?'block':'none';render()}
+function showHint(n){let e=document.getElementById('h'+n);e.style.display=e.style.display==='block'?'none':'block'}
+function getAnswer(n,q){let e=document.querySelector(`input[name="q${n}"]:checked`);return e?(q.type==='mcq'?Number(e.value):e.value==='true'):null}
+function shuffle(){order.sort(()=>Math.random()-.5);render()}
+function resetQuiz(){order=[...Q.keys()];results={};studentName.value='';render();window.scrollTo({top:0,behavior:'smooth'})}
+function buildEmail(score,total,pct){
+ let lines=['Fortran Tutor — Quiz 2','Λειτουργία: Εξέταση','Φοιτητής: '+(studentName.value||'—'),'Ημερομηνία: '+new Date().toLocaleString('el-GR'),'Επίδοση: '+score+'/'+total+' ('+pct+'%)',''];
+ getIds().forEach((n,i)=>{let q=Q[n],a=getAnswer(n,q);let given=q.type==='mcq'?(q.opts[a]||'—'):(a?'Σωστό':'Λάθος');let right=q.type==='mcq'?q.opts[q.a]:(q.a?'Σωστό':'Λάθος');lines.push((i+1)+'. '+q.q.replace(/\n/g,' '));lines.push('Απάντηση φοιτητή: '+given);lines.push('Σωστή απάντηση: '+right);lines.push('Αποτέλεσμα: '+(results[n]?'Σωστό':'Λάθος'));lines.push('')}); return lines.join('\n')
+}
+async function sendResult(score,total,pct){
+ const msg=document.getElementById('mailMsg'); msg.textContent='Αποστολή αποτελέσματος...';
+ if(!WEB3FORMS_ACCESS_KEY){msg.textContent='⚠️ Δεν έχει οριστεί ακόμη Web3Forms Access Key. Βάλε το key στον κώδικα πριν το ανέβασμα στο GitHub.';return}
+ try{
+  const fd=new FormData(); fd.append('access_key',WEB3FORMS_ACCESS_KEY); fd.append('name',(studentName.value||'Άγνωστος φοιτητής').trim());
+  fd.append('subject',`Fortran Quiz 2 — ${(studentName.value||'Φοιτητής').trim()} — ${pct}%`); fd.append('message',buildEmail(score,total,pct));
+  const r=await fetch('https://api.web3forms.com/submit',{method:'POST',body:fd}); const d=await r.json();
+  msg.textContent=r.ok&&d.success?'✓ Η επίδοση στάλθηκε επιτυχώς στο email του καθηγητή.':'✗ Η αποστολή απέτυχε: '+(d.message||'Άγνωστο σφάλμα Web3Forms.');
+ }catch(e){msg.textContent='✗ Δεν ήταν δυνατή η σύνδεση με το Web3Forms.'}
+}
+function checkQuiz(){
+ const ids=getIds(),name=(studentName.value||'').trim();
+ if(mode==='exam'&&!name){alert('Στην Εξέταση πρέπει να συμπληρωθεί το ονοματεπώνυμο.');studentName.focus();return}
+ const missing=ids.filter(n=>getAnswer(n,Q[n])===null);
+ if(missing.length){alert('Έχουν μείνει '+missing.length+' ερωτήσεις χωρίς απάντηση.');return}
+ results={}; let score=0;
+ ids.forEach(n=>{let q=Q[n],x=getAnswer(n,q),ok=x===q.a;results[n]=ok;if(ok)score++;let f=document.getElementById('f'+n);f.className='feedback '+(ok?'correct':'wrong');f.style.display='block';f.innerHTML=(ok?'✓ <b>Σωστό.</b> ':'✗ <b>Λάθος.</b> ')+q.exp});
+ let pct=Math.round(score/ids.length*100);
+ result.style.display='block'; result.innerHTML=`<div class="score">${score} / ${ids.length} · ${pct}%</div><p>${mode==='exam'?'Αποτέλεσμα εξέτασης για <b>'+esc(name)+'</b>.':'Ο έλεγχος ολοκληρώθηκε.'}</p><div id="mailMsg" class="status"></div>`;
+ if(mode==='exam')sendResult(score,ids.length,pct);
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+init();
+</script>
+</body>
+</html>
