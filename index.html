@@ -3,49 +3,106 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fortran Lessons</title>
+<title>Fortran — Εκπαιδευτικό Υλικό</title>
 <style>
+:root{
+  --bg:#f4f6fb; --card:#fff; --ink:#182230; --muted:#667085;
+  --line:#d9dfeb; --blue:#315efb; --blue2:#172554;
+}
 *{box-sizing:border-box}
-body{margin:0;background:#f4f6fb;color:#182230;font-family:Arial,"DejaVu Sans",sans-serif;line-height:1.55}
-.wrap{max-width:1000px;margin:auto;padding:28px 16px 60px}
-.hero{background:linear-gradient(135deg,#172554,#315efb);color:white;border-radius:22px;padding:34px 28px;margin-bottom:18px}
-.hero h1{margin:0 0 8px;font-size:34px}.hero p{margin:5px 0;opacity:.94}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:15px}
-.card{background:white;border:1px solid #d9dfeb;border-radius:16px;padding:20px;box-shadow:0 3px 12px #0000000a}
-.card h2{margin:0 0 7px;font-size:21px}.card p{color:#667085}
-a.btn{display:inline-block;text-decoration:none;background:#315efb;color:white;padding:10px 14px;border-radius:9px;font-weight:700;margin-top:5px}
-a.btn.alt{background:#e9edf5;color:#26334a}
-.info{margin-top:18px;background:#fff8df;border:1px solid #ead18b;border-radius:14px;padding:15px;color:#704900}
-footer{margin-top:30px;color:#667085;font-size:13px;text-align:center}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:Arial,"DejaVu Sans",sans-serif;line-height:1.55
+}
+.wrap{max-width:1050px;margin:auto;padding:28px 18px 60px}
+.hero{
+  background:linear-gradient(135deg,var(--blue2),var(--blue));
+  color:#fff;border-radius:22px;padding:32px;margin-bottom:22px;
+}
+.hero h1{margin:0 0 7px;font-size:32px}
+.hero p{margin:5px 0;opacity:.94}
+.section{margin:22px 0}
+.section h2{font-size:21px;margin:0 0 12px}
+.grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
+  gap:14px;
+}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:18px;box-shadow:0 2px 9px #00000008;
+}
+.badge{
+  display:inline-block;font-size:11px;font-weight:800;
+  letter-spacing:.06em;text-transform:uppercase;
+  color:#315efb;background:#eef2ff;border-radius:999px;padding:4px 8px;
+  margin-bottom:8px;
+}
+.card h3{margin:2px 0 6px;font-size:18px}
+.card p{margin:5px 0 14px;color:var(--muted);font-size:14px}
+a.button{
+  display:inline-block;text-decoration:none;background:var(--blue);color:#fff;
+  font-weight:800;padding:9px 13px;border-radius:9px;
+}
+.footer{
+  color:var(--muted);font-size:13px;text-align:center;margin-top:28px
+}
 </style>
 </head>
 <body>
 <div class="wrap">
+
 <section class="hero">
-<h1>Fortran Lessons</h1>
-<p>Σημειώσεις, παραδείγματα και διαδραστική εξάσκηση στη Fortran.</p>
-<p>Κεφάλαιο 1 — Εισαγωγή στη Fortran</p>
+  <h1>Fortran — Εκπαιδευτικό Υλικό</h1>
+  <p>Σημειώσεις και διαδραστικά quiz του μαθήματος.</p>
+  <p style="font-size:13px">Χρησιμοποίησε τα quiz για εξάσκηση ή εξέταση και τις σημειώσεις ως βασικό υλικό μελέτης.</p>
 </section>
 
-<div class="grid">
-<article class="card">
-<h2>📘 Κεφάλαιο 1 — Σημειώσεις</h2>
-<p>Αναλυτικές σημειώσεις για τις βασικές έννοιες του Κεφαλαίου 1, με παραδείγματα και συμπλήρωμα για READ, PRINT και WRITE.</p>
-<a class="btn" href="Κεφάλαιο_1_Εισαγωγή_στη_Fortran.pdf" target="_blank">Άνοιγμα σημειώσεων</a>
-</article>
+<section class="section">
+  <h2>📚 Σημειώσεις</h2>
+  <div class="grid">
 
-<article class="card">
-<h2>📝 Διαδραστικό Quiz</h2>
-<p>Εξάσκηση και εξέταση με πολλαπλής επιλογής, σωστό/λάθος, «βρες το λάθος» και «τι εμφανίζει».</p>
-<a class="btn" href="Fortran_Κεφάλαιο_1_Quiz.html" target="_blank">Έναρξη Quiz</a>
-</article>
+    <article class="card">
+      <span class="badge">Κεφάλαιο 1</span>
+      <h3>Εισαγωγή στη Fortran</h3>
+      <p>Οι αναθεωρημένες προσωπικές σημειώσεις του Κεφαλαίου 1.</p>
+      <a class="button" href="1)%20Κεφάλαιο_1_Εισαγωγή_στη_Fortran.pdf">Άνοιγμα PDF</a>
+    </article>
+
+    <article class="card">
+      <span class="badge">Κεφάλαιο 2</span>
+      <h3>Δομές Ελέγχου</h3>
+      <p>Η τελική ενοποιημένη έκδοση του Κεφαλαίου 2, με τις διορθώσεις και προσθήκες που έγιναν.</p>
+      <a class="button" href="2)%20Κεφάλαιο_2_Δομές_Ελέγχου_Fortran.pdf">Άνοιγμα PDF</a>
+    </article>
+
+  </div>
+</section>
+
+<section class="section">
+  <h2>📝 Διαδραστικά Quiz</h2>
+  <div class="grid">
+
+    <article class="card">
+      <span class="badge">Quiz 1</span>
+      <h3>Fortran — Κεφάλαιο 1</h3>
+      <p>Λειτουργία Μάθησης και Εξέτασης, αυτόματη διόρθωση και αναφορά αποτελεσμάτων.</p>
+      <a class="button" href="1)%20Fortran_Quiz_1.html">Έναρξη Quiz 1</a>
+    </article>
+
+    <article class="card">
+      <span class="badge">Quiz 2</span>
+      <h3>Fortran — Κεφάλαιο 2</h3>
+      <p>IF, ELSE, ELSE IF, λογικοί και συγκριτικοί τελεστές, εμφωλευμένα IF, ανοχή και εφαρμογές.</p>
+      <a class="button" href="2)%20Fortran_Quiz_2.html">Έναρξη Quiz 2</a>
+    </article>
+
+  </div>
+</section>
+
+<div class="footer">
+  Fortran Tutor · Εκπαιδευτικό υλικό μαθήματος
 </div>
 
-<div class="info">
-<b>Για τον φοιτητή:</b> Συνιστάται πρώτα η μελέτη των σημειώσεων και στη συνέχεια η ολοκλήρωση του quiz.
-</div>
-
-<footer>Fortran Lessons · Κεφάλαιο 1</footer>
 </div>
 </body>
 </html>
