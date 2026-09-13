@@ -48,7 +48,7 @@ const Q=[
 {type:'mcq',topic:'Lab 7',q:'Στο Lab 7, ποια διαδικασία επιστρέφει το άθροισμα τετραγώνων ως μία REAL τιμή;',opts:['FUNCTION fun_internal','SUBROUTINE count_above','MODULE μόνο','DO WHILE'],a:0,exp:'Η fun_internal επιστρέφει μία τιμή, άρα είναι FUNCTION.'},
 {type:'mcq',topic:'Lab 7',q:'Τι επιστρέφει η count_above στο Lab 7;',opts:['Το πλήθος στοιχείων πάνω από το όριο','Τον ίδιο πίνακα','Ένα MODULE','Το άθροισμα τετραγώνων'],a:0,exp:'Η count_above επιστρέφει ακέραιο μετρητή μέσω ορίσματος intent(out).'}
 ];
-const WEB3FORMS_ACCESS_KEY=''; // Βάλε εδώ το Web3Forms Access Key πριν το ανέβασμα στο GitHub.
+const WEB3FORMS_ACCESS_KEY='22392efc-cbdc-4a66-96d9-5ca46d426084'; // Βάλε εδώ το Web3Forms Access Key πριν το ανέβασμα στο GitHub.
 let mode='learn',order=[...Q.keys()],results={};
 const hints={'Μονάδες προγράμματος':'Σκέψου καθαρότητα και επαναχρησιμοποίηση.','Εσωτερικές διαδικασίες':'contains: οι διαδικασίες μετά από αυτό καλούνται ρητά.','FUNCTION':'FUNCTION = μία τιμή σε έκφραση.','SUBROUTINE':'SUBROUTINE = CALL και ενέργεια/πολλά αποτελέσματα.','Ορίσματα και INTENT':'IN: διαβάζει, OUT: γράφει, INOUT: διαβάζει και αλλάζει.','Εξωτερικές διαδικασίες':'Είναι ανεξάρτητες μονάδες έξω από το PROGRAM.','MODULE':'MODULE οργανώνει συναφείς διαδικασίες και χρησιμοποιείται με USE.','MODULE και ONLY':'ONLY επιλέγει public ονόματα.','PUBLIC και PRIVATE':'Με private, μόνο τα public ονόματα εξάγονται.','Arrays σε διαδικασίες':'x(:) παίρνει το μήκος του πίνακα που δόθηκε.','ALLOCATABLE':'Πρώτα allocate, μετά χρήση, στο τέλος deallocate.','Lab 7':'Ξεχώρισε FUNCTION από SUBROUTINE.'};
 const $=id=>document.getElementById(id);
