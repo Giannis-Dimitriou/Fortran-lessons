@@ -52,7 +52,7 @@ const Q=[
 {type:'tf',topic:'Συχνά λάθη',q:'Μπορούμε να χρησιμοποιήσουμε allocatable πίνακα πριν από την allocate.',a:false,exp:'Λάθος. Πρώτα πρέπει να δεσμευτεί ο χώρος με allocate.'},
 {type:'tf',topic:'Συχνά λάθη',q:'Το deallocate(h,t) αποδεσμεύει τη μνήμη των δυναμικών πινάκων όταν τελειώσουμε.',a:true,exp:'Σωστό. Είναι το τελικό βήμα μετά τη χρήση των allocatable arrays.'}
 ];
-const WEB3FORMS_ACCESS_KEY=''; // Βάλε εδώ το Web3Forms Access Key πριν το ανέβασμα στο GitHub.
+const WEB3FORMS_ACCESS_KEY='22392efc-cbdc-4a66-96d9-5ca46d426084'; // Βάλε εδώ το Web3Forms Access Key πριν το ανέβασμα στο GitHub.
 let mode='learn',order=[...Q.keys()],results={};
 const hints={'Βασικές έννοιες':'Σκέψου τον δίσκο: OPEN, επεξεργασία, CLOSE.','OPEN':'old για υπάρχον αρχείο, replace για νέο/αντικατάσταση.','READ γνωστού πλήθους':'Όταν γνωρίζουμε n, το DO έχει όρια.','WRITE και FORMAT':'* = οθόνη, αριθμός unit = αρχείο.','IOSTAT και άγνωστο πλήθος':'ierr=0: επιτυχία. Αλλιώς: σταματάμε.','Πολλά fields':'Η σειρά της READ πρέπει να είναι ίδια με των στηλών.','REWIND και ALLOCATE':'Μετράμε n, REWIND, ALLOCATE, ξαναδιαβάζουμε.','weatherdata':'Άνεση σημαίνει ότι ισχύουν και τα τέσσερα όρια.','Συχνά λάθη':'Πρώτα allocate και στο τέλος deallocate.'};
 const $=id=>document.getElementById(id);
